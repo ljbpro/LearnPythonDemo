@@ -44,3 +44,8 @@ VOCBboxDataset(data_dir='C:/Test', split='train')
 
 程序会去读取下面的文件：
 C:/Test/ImageSets/Main/train.txt
+
+
+
+voc 2007 download:
+http://host.robots.ox.ac.uk/pascal/VOC/voc2007/
