@@ -1,0 +1,46 @@
+TransformDataset继承了dataset_mixin.DatasetMixin，就继承了dataset_mixin.DatasetMixin所有的方法，
+所以子类TransformDataset从父类dataset_mixin.DatasetMixin继承了__getitem__，__len__，get_example三个方法。
+子类TransformDataset为了满足自身的需求，重写了__len__，get_example两个方法，子类现在就有四个方法，
+自己的__init__，重写父类的__len__，get_example方法，从父类继承的__getitem__方法。
+
+那么子类TransformDataset就可以等同于下面这种格式：
+
+from chainer.dataset import dataset_mixin
+
+class TransformDataset():
+    def __init__(self, dataset, transform):
+        self._dataset = dataset
+        self._transform = transform
+
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            current, stop, step = index.indices(len(self))
+            return [self.get_example(i) for i in
+                    six.moves.range(current, stop, step)]
+        elif isinstance(index, list) or isinstance(index, numpy.ndarray):
+            return [self.get_example(i) for i in index]
+        else:
+            return self.get_example(index)
+
+    def __len__(self):
+        return len(self._dataset)
+
+    def get_example(self, i):
+        in_data = self._dataset[i]
+        return self._transform(in_data)
+
+
+
+
+关于VOCBboxDataset，有一个参数data_dir，可以直接指定本地dataSet的路径
+例1：
+VOCBboxDataset(data_dir='C:/Tmp', split='trainval')
+
+程序会去读取下面的文件：
+C:/Tmp/ImageSets/Main/trainval.txt
+
+例2：
+VOCBboxDataset(data_dir='C:/Test', split='train')
+
+程序会去读取下面的文件：
+C:/Test/ImageSets/Main/train.txt
